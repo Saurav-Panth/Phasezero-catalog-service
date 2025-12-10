@@ -9,6 +9,7 @@ import org.springframework.web.bind.annotation.*;
 
 import com.phasezero.code.dto.ResponseStructure;
 import com.phasezero.code.entities.Product;
+import com.phasezero.code.enums.Category;
 import com.phasezero.code.services.ProductService;
 
 @RestController
@@ -32,6 +33,24 @@ public class ProductController {
 	public ResponseEntity<ResponseStructure<List<Product>>> search(@RequestParam String name) {
 	    return productService.searchByPartName(name);
 	}
+	
+	 @GetMapping("/category/{category}")
+	    public ResponseEntity<ResponseStructure<List<Product>>> getProducts(@PathVariable String category) {
+	        return productService.getByCategory(category);
+	    }
+	 
+	 
+	 @GetMapping("/sorted/price")
+	 public ResponseEntity<ResponseStructure<List<Product>>> getSortedProducts() {
+	     return productService.getAllSortedByPrice();
+	 }
+
+
+	 
+	 @GetMapping("/products/inventory/value")
+	 public ResponseEntity<ResponseStructure<Double>> getInventoryValue() {
+	     return productService.getTotalInventoryValue();
+	 }
 
 	
 }

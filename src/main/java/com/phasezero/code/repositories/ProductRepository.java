@@ -3,16 +3,29 @@ package com.phasezero.code.repositories;
 import java.util.Optional;
 
 import org.springframework.data.jpa.repository.JpaRepository;
+import org.springframework.data.jpa.repository.Query;
 
 import com.phasezero.code.entities.Product;
+import com.phasezero.code.enums.Category;
+
 import java.util.List;
 
 
 public interface ProductRepository extends JpaRepository<Product, Long>{
 
-	Optional<Product> findByPartNumber(String partNumber);
+	public Optional<Product> findByPartNumber(String partNumber);
 	
-	List<Product> findByPartNameContainingIgnoreCase(String name);
+	public List<Product> findByPartNameContainingIgnoreCase(String name);
+
+	public List<Product> findByCategory(Category category);
+	
+	public List<Product> findAllByOrderByPriceAsc();
+	
+	public List<Product> findAll();
+
+	@Query("SELECT SUM(p.price * p.stock) FROM Product p")
+	public Double getTotalInventoryValue();
+
 
 	
 }
