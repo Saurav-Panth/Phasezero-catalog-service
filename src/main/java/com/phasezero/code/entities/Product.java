@@ -4,6 +4,7 @@ package com.phasezero.code.entities;
 import java.time.LocalDateTime;
 
 import org.hibernate.annotations.CreationTimestamp;
+import org.hibernate.annotations.IdGeneratorType;
 
 import com.phasezero.code.enums.Category;
 
@@ -17,8 +18,13 @@ import lombok.Setter;
 @Entity	
 public class Product {
 
-    @Id
-    private String partNumber;
+	@Id
+	@GeneratedValue(strategy = GenerationType.IDENTITY)
+	private Long id;
+	
+	@Column(unique = true)
+	private String partNumber;
+
 
     private String partName;
 
