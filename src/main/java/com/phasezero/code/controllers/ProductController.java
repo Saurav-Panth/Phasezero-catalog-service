@@ -3,6 +3,7 @@ package com.phasezero.code.controllers;
 import java.util.List;
 
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.data.domain.Page;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
@@ -47,10 +48,23 @@ public class ProductController {
 
 
 	 
-	 @GetMapping("/products/inventory/value")
+	 @GetMapping("/inventory/value")
 	 public ResponseEntity<ResponseStructure<Double>> getInventoryValue() {
 	     return productService.getTotalInventoryValue();
 	 }
+	 
+	 
+	 @GetMapping("/{id}")
+	    public ResponseEntity<ResponseStructure<Product>> getProductById(@PathVariable Long id) {
+	        return productService.getById(id);
+	    }
+
+	    @GetMapping("/page")
+	    public ResponseEntity<ResponseStructure<Page<Product>>> getPagedProducts(
+	            @RequestParam int page,
+	            @RequestParam int size) {
+	        return productService.getAllPaged(page, size);
+	    }
 
 	
 }

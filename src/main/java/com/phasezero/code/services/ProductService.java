@@ -6,6 +6,8 @@ import java.util.Optional;
 
 import org.apache.coyote.Response;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.PageRequest;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Service;
@@ -54,6 +56,7 @@ public class ProductService {
 
 		ResponseStructure<Product> response = new ResponseStructure<>();
 
+		product.setPartName(product.getPartName().toLowerCase());
 		response.setData(productRepository.save(product));
 		response.setMessage(Message.CREATED);
 		response.setStausCode(HttpStatus.CREATED.value());
@@ -155,6 +158,40 @@ public class ProductService {
 
 	    return new ResponseEntity<>(response, HttpStatus.OK);
 	}
+	
+	
+	
+	public ResponseEntity<ResponseStructure<Product>> getById(Long id) {
+
+	    Product product = productRepository.findById(id)
+	            .orElseThrow(() -> new NoRecordException("No product found for id: " + id));
+
+	    ResponseStructure<Product> response = new ResponseStructure<>();
+	    response.setData(product);
+	    response.setMessage(Message.SUCCESS);
+	    response.setStausCode(HttpStatus.OK.value());
+
+	    return new ResponseEntity<>(response, HttpStatus.OK);
+	}
+	
+	
+	public ResponseEntity<ResponseStructure<Page<Product>>> getAllPaged(int page, int size) {
+
+	    PageRequest pageable = PageRequest.of(page, size);
+	    Page<Product> result = productRepository.findAll(pageable);
+
+	    if (result.isEmpty()) {
+	        throw new NoRecordException("No products found");
+	    }
+
+	    ResponseStructure<Page<Product>> response = new ResponseStructure<>();
+	    response.setData(result);
+	    response.setMessage(Message.SUCCESS);
+	    response.setStausCode(HttpStatus.OK.value());
+
+	    return new ResponseEntity<>(response, HttpStatus.OK);
+	}
+
 
 
 
