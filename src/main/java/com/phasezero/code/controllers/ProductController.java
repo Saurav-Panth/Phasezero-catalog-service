@@ -7,7 +7,7 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
 
-import com.phasezero.code.dto.ResponseStrucutre;
+import com.phasezero.code.dto.ResponseStructure;
 import com.phasezero.code.entities.Product;
 import com.phasezero.code.services.ProductService;
 
@@ -19,13 +19,19 @@ public class ProductController {
 	private ProductService productService;
 
 	@PostMapping
-	public ResponseEntity<ResponseStrucutre<Product>> saveProduct(@RequestBody Product product){
+	public ResponseEntity<ResponseStructure<Product>> saveProduct(@RequestBody Product product){
 		return productService.saveProduct(product);
 	}
 	
 	@GetMapping
-	public ResponseEntity<ResponseStrucutre<List<Product>>> getProducts(){
+	public ResponseEntity<ResponseStructure<List<Product>>> getProducts(){
 		return productService.getProducts();
 	}
+	
+	@GetMapping("/search")
+	public ResponseEntity<ResponseStructure<List<Product>>> search(@RequestParam String name) {
+	    return productService.searchByPartName(name);
+	}
+
 	
 }

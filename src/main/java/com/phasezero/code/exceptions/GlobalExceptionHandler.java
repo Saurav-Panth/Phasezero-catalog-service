@@ -1,18 +1,22 @@
 package com.phasezero.code.exceptions;
 
+import java.util.Arrays;
+
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
+import org.springframework.http.converter.HttpMessageNotReadableException;
 import org.springframework.web.bind.annotation.ExceptionHandler;
 import org.springframework.web.bind.annotation.RestControllerAdvice;
 
-import com.phasezero.code.dto.ExceptionStrucutre;
+import com.phasezero.code.dto.ExceptionStructure;
+import com.phasezero.code.enums.Category;
 
 @RestControllerAdvice
 public class GlobalExceptionHandler {
 
     @ExceptionHandler(IdNotFoundException.class)
-    public ResponseEntity<ExceptionStrucutre<String>> handleIDNFE(IdNotFoundException exception) {
-        ExceptionStrucutre<String> response = new ExceptionStrucutre<>();
+    public ResponseEntity<ExceptionStructure<String>> handleIDNFE(IdNotFoundException exception) {
+        ExceptionStructure<String> response = new ExceptionStructure<>();
         response.setData(exception.getMessage());
         response.setStausCode(HttpStatus.NOT_FOUND.value());
         response.setMessage("ID NOT FOUND");
@@ -20,8 +24,8 @@ public class GlobalExceptionHandler {
     }
 
     @ExceptionHandler(DuplicatePartNumberException.class)
-    public ResponseEntity<ExceptionStrucutre<String>> handleDPNE(DuplicatePartNumberException exception) {
-        ExceptionStrucutre<String> response = new ExceptionStrucutre<>();
+    public ResponseEntity<ExceptionStructure<String>> handleDPNE(DuplicatePartNumberException exception) {
+        ExceptionStructure<String> response = new ExceptionStructure<>();
         response.setData(exception.getMessage());
         response.setStausCode(HttpStatus.CONFLICT.value());
         response.setMessage("DUPLICATE PART NUMBER");
@@ -29,8 +33,8 @@ public class GlobalExceptionHandler {
     }
 
     @ExceptionHandler(NegativePriceException.class)
-    public ResponseEntity<ExceptionStrucutre<String>> handleNPE(NegativePriceException exception) {
-        ExceptionStrucutre<String> response = new ExceptionStrucutre<>();
+    public ResponseEntity<ExceptionStructure<String>> handleNPE(NegativePriceException exception) {
+        ExceptionStructure<String> response = new ExceptionStructure<>();
         response.setData(exception.getMessage());
         response.setStausCode(HttpStatus.BAD_REQUEST.value());
         response.setMessage("NEGATIVE PRICE NOT ALLOWED");
@@ -38,8 +42,8 @@ public class GlobalExceptionHandler {
     }
 
     @ExceptionHandler(NegativeStockException.class)
-    public ResponseEntity<ExceptionStrucutre<String>> handleNSE(NegativeStockException exception) {
-        ExceptionStrucutre<String> response = new ExceptionStrucutre<>();
+    public ResponseEntity<ExceptionStructure<String>> handleNSE(NegativeStockException exception) {
+        ExceptionStructure<String> response = new ExceptionStructure<>();
         response.setData(exception.getMessage());
         response.setStausCode(HttpStatus.BAD_REQUEST.value());
         response.setMessage("NEGATIVE STOCK NOT ALLOWED");
@@ -47,8 +51,8 @@ public class GlobalExceptionHandler {
     }
 
     @ExceptionHandler(NoRecordException.class)
-    public ResponseEntity<ExceptionStrucutre<String>> handleNRE(NoRecordException exception) {
-        ExceptionStrucutre<String> response = new ExceptionStrucutre<>();
+    public ResponseEntity<ExceptionStructure<String>> handleNRE(NoRecordException exception) {
+        ExceptionStructure<String> response = new ExceptionStructure<>();
         response.setData(exception.getMessage());
         response.setStausCode(HttpStatus.NOT_FOUND.value());
         response.setMessage("NO RECORD FOUND");
@@ -56,29 +60,37 @@ public class GlobalExceptionHandler {
     }
 
     @ExceptionHandler(PartNameNotFoundException.class)
-    public ResponseEntity<ExceptionStrucutre<String>> handlePNNFE(PartNameNotFoundException exception) {
-        ExceptionStrucutre<String> response = new ExceptionStrucutre<>();
+    public ResponseEntity<ExceptionStructure<String>> handlePNNFE(PartNameNotFoundException exception) {
+        ExceptionStructure<String> response = new ExceptionStructure<>();
         response.setData(exception.getMessage());
         response.setStausCode(HttpStatus.BAD_REQUEST.value());
         response.setMessage("PART NAME IS REQUIRED");
         return new ResponseEntity<>(response, HttpStatus.BAD_REQUEST);
     }
 
-    @ExceptionHandler(BrandNotFoundException.class)
-    public ResponseEntity<ExceptionStrucutre<String>> handleBNFE(BrandNotFoundException exception) {
-        ExceptionStrucutre<String> response = new ExceptionStrucutre<>();
-        response.setData(exception.getMessage());
+
+
+    @ExceptionHandler(HttpMessageNotReadableException.class)
+    public ResponseEntity<ExceptionStructure<String>> handleWCE(HttpMessageNotReadableException exception) {
+
+        String allowedCategories = Arrays.toString(Category.values());
+
+        ExceptionStructure<String> response = new ExceptionStructure<>();
+        response.setData("Invalid category. Allowed values: " + allowedCategories);
         response.setStausCode(HttpStatus.BAD_REQUEST.value());
-        response.setMessage("BRAND IS REQUIRED");
+        response.setMessage("INVALID CATEGORY");
+
         return new ResponseEntity<>(response, HttpStatus.BAD_REQUEST);
     }
 
-    @ExceptionHandler(WrongCategoryException.class)
-    public ResponseEntity<ExceptionStrucutre<String>> handleWCE(WrongCategoryException exception) {
-        ExceptionStrucutre<String> response = new ExceptionStrucutre<>();
+    
+    @ExceptionHandler(MissingFieldException.class)
+    public ResponseEntity<ExceptionStructure<String>> handleMPNFE(MissingFieldException exception) {
+        ExceptionStructure<String> response = new ExceptionStructure<>();
         response.setData(exception.getMessage());
         response.setStausCode(HttpStatus.BAD_REQUEST.value());
-        response.setMessage("INVALID CATEGORY");
+        response.setMessage("Missing Field");
         return new ResponseEntity<>(response, HttpStatus.BAD_REQUEST);
     }
+
 }

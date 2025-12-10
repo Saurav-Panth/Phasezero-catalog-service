@@ -1,6 +1,6 @@
 package com.phasezero.code.dto;
 
-public class ExceptionStrucutre<T> {
+public class ExceptionStructure<T> {
 
 	private int stausCode;
 	

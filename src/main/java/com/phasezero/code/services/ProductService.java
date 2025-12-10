@@ -9,43 +9,97 @@ import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Service;
 
-import com.phasezero.code.dto.ResponseStrucutre;
-import com.phasezero.code.entities.Product;
-import com.phasezero.code.enums.Message;
+import com.phasezero.code.dto.ResponseStructure;
+import com.phasezero.code.exceptions.*;
 import com.phasezero.code.repositories.ProductRepository;
+import com.phasezero.code.entities.Product;
+import com.phasezero.code.enums.Category;
+import com.phasezero.code.enums.Message;
+
 
 @Service
 public class ProductService {
-	
+
 	@Autowired
 	private ProductRepository productRepository;
-	
-	public ResponseEntity<ResponseStrucutre<Product>> saveProduct(Product product){
+
+	public ResponseEntity<ResponseStructure<Product>> saveProduct(Product product) {
+
+		if (product.getPartNumber() == null || product.getPartNumber().isBlank())
+			throw new MissingFieldException("PartNumber is required");
+
+		if (product.getPartName() == null || product.getPartName().isBlank())
+			throw new MissingFieldException("PartName is required");
+
+		if (product.getCategory() == null)
+			throw new MissingFieldException("Category is required");
 		
-		Optional<Product> opt = productRepository.findByPartNumber(product.getPartNumber());
+		if (product.getPrice() == null)
+			throw new MissingFieldException("Price is required");
+
+		if (product.getPrice() < 0.0)
+			throw new NegativePriceException("Price cannot be negative");
+
+		if (product.getStock() == null)
+			throw new MissingFieldException("Stock is required");
+
+		if (product.getStock() < 0)
+			throw new NegativeStockException("Stock cannot be negative");
+
+		if (product.getBrand() == null || product.getBrand().isBlank())
+			throw new MissingFieldException("Brand is required");
+
+		if(productRepository.findByPartNumber(product.getPartNumber()).isPresent())
+			throw new DuplicatePartNumberException("Duplicate PartNumber");
 		
-		ResponseStrucutre<Product> response = new ResponseStrucutre<>();
+		
+		
+		
+		
+		ResponseStructure<Product> response = new ResponseStructure<>();
 		
 		response.setData(productRepository.save(product));
 		response.setMessage(Message.CREATED);
 		response.setStausCode(HttpStatus.CREATED.value());
 		
 		return new ResponseEntity<>(response,HttpStatus.CREATED);
-		
+
 	}
-	
-	
-	public ResponseEntity<ResponseStrucutre<List<Product>>> getProducts(){
-		ResponseStrucutre<List<Product>> response = new ResponseStrucutre<>();
+
+	public ResponseEntity<ResponseStructure<List<Product>>> getProducts() {
 		
-		response.setData(productRepository.findAll());
+
+		List<Product> list = productRepository.findAll();
+		if(list.isEmpty())
+			throw new NoRecordException("PRODUCTS NOT FOUND");
+		
+		
+		ResponseStructure<List<Product>> response = new ResponseStructure<>();
+		response.setData(list);
 		response.setMessage(Message.SUCCESS);
 		response.setStausCode(HttpStatus.OK.value());
-		
-		return new ResponseEntity<>(response,HttpStatus.OK);
-		
+
+		return new ResponseEntity<>(response, HttpStatus.OK);
+
 	}
 	
-	
-	
+	public ResponseEntity<ResponseStructure<List<Product>>> searchByPartName(String name) {
+
+	    if (name == null || name.isBlank())
+	        throw new MissingFieldException("Search keyword is required");
+
+	    List<Product> products = productRepository.findByPartNameContainingIgnoreCase(name);
+
+	    if (products.isEmpty())
+	        throw new NoRecordException("No products found for: " + name);
+
+	    ResponseStructure<List<Product>> response = new ResponseStructure<>();
+	    response.setData(products);
+	    response.setMessage(Message.SUCCESS);
+	    response.setStausCode(HttpStatus.OK.value());
+
+	    return new ResponseEntity<>(response, HttpStatus.OK);
+	}
+
+
 }

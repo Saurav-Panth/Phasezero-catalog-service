@@ -6,7 +6,7 @@ import lombok.Getter;
 import lombok.Setter;
 
 
-public class ResponseStrucutre<T> {
+public class ResponseStructure<T> {
 
 	private int stausCode;
 	
